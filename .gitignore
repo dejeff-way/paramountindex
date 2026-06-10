@@ -1,1 +1,7 @@
-.env\n__pycache__/\nleads.db\nscraper.log\ntemp_bids/\noutput/\nclient/dist/\nclient/node_modules/
+.env
+__pycache__/
+leads.db
+scraper.log
+temp_bids/
+output/
+client/node_modules/
