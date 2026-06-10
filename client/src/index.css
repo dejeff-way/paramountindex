@@ -1,0 +1,141 @@
+@import "tailwindcss";
+
+/* ══════════════════════════════════════════════════════════════
+   LINEAR DESIGN SYSTEM — Procurement Wire
+   ══════════════════════════════════════════════════════════════ */
+
+@theme {
+  /* Background surfaces — Linear's luminance-stacking model */
+  --color-bg-deep: #08090a;
+  --color-bg-panel: #0f1011;
+  --color-bg-surface: #191a1b;
+  --color-bg-elevated: #28282c;
+
+  /* Text — Linear's near-white / silver hierarchy */
+  --color-text-primary: #f7f8f8;
+  --color-text-secondary: #d0d6e0;
+  --color-text-tertiary: #8a8f98;
+  --color-text-quaternary: #62666d;
+
+  /* Brand — Linear's indigo-violet */
+  --color-brand: #5e6ad2;
+  --color-brand-accent: #7170ff;
+  --color-brand-hover: #828fff;
+
+  /* Status */
+  --color-status-green: #10b981;
+  --color-status-amber: #f59e0b;
+  --color-status-red: #ef4444;
+
+  /* Borders — semi-transparent white */
+  --border-subtle: rgba(255, 255, 255, 0.05);
+  --border-standard: rgba(255, 255, 255, 0.08);
+
+  /* Fonts */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* Radius */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   BASE STYLES
+   ══════════════════════════════════════════════════════════════ */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-feature-settings: 'cv01', 'ss03';
+  background: var(--color-bg-deep);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar styling — dark, minimal */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CUSTOM UTILITY CLASSES
+   ══════════════════════════════════════════════════════════════ */
+
+.glass-panel {
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-standard);
+}
+
+.glass-sidebar {
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-right: 1px solid var(--border-standard);
+}
+
+.glass-drawer {
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-left: 1px solid var(--border-standard);
+}
+
+.lead-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border-subtle);
+  transition: background 0.15s ease;
+}
+.lead-row:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+.lead-row.active {
+  background: rgba(113, 112, 255, 0.06);
+  border-left: 2px solid var(--color-brand-accent);
+}
+
+.category-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 510;
+  letter-spacing: -0.13px;
+  line-height: 1.4;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.countdown-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 510;
+  line-height: 1.4;
+}
