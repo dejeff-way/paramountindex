@@ -1,0 +1,3 @@
+name = "paramountindex"
+pages_build_output_dir = "client/dist"
+compatibility_date = "2025-04-01"
