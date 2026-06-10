@@ -3,6 +3,8 @@ import Feed from './pages/Feed';
 import LeadDetail from './pages/LeadDetail';
 import Subscribe from './pages/Subscribe';
 import Counties from './pages/Counties';
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
 
 /**
  * Simple hash-based router — zero dependencies.
@@ -30,6 +32,8 @@ function useHashRoute(): [string, string | null] {
   }
   if (segments[0] === 'subscribe') return ['/subscribe', null];
   if (segments[0] === 'counties') return ['/counties', null];
+  if (segments[0] === 'privacy') return ['/privacy', null];
+  if (segments[0] === 'terms') return ['/terms', null];
   return ['/', null];
 }
 
@@ -46,6 +50,10 @@ export default function App() {
         return <Subscribe />;
       case '/counties':
         return <Counties />;
+      case '/privacy':
+        return <Privacy />;
+      case '/terms':
+        return <Terms />;
       default:
         return <Feed />;
     }
@@ -100,6 +108,26 @@ export default function App() {
 
       {/* Page Content */}
       {renderPage()}
+
+      {/* Footer */}
+      <footer style={{
+        borderTop: '1px solid var(--color-border)',
+        padding: '24px 40px',
+        marginTop: 60,
+        display: 'flex',
+        justifyContent: 'center',
+        gap: 24,
+        fontSize: 12,
+        color: 'var(--color-text-tertiary)',
+      }}>
+        <span>© {new Date().getFullYear()} Paramount Index</span>
+        <a href="#/privacy" style={{ color: 'var(--color-text-tertiary)', textDecoration: 'none' }}>
+          Privacy Policy
+        </a>
+        <a href="#/terms" style={{ color: 'var(--color-text-tertiary)', textDecoration: 'none' }}>
+          Terms of Service
+        </a>
+      </footer>
     </div>
   );
 }
