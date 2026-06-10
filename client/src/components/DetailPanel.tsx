@@ -1,216 +1,275 @@
 import type { Lead } from '../types';
-import { X, ExternalLink, Calendar, Building2, Tag, DollarSign, FileText, Clock } from 'lucide-react';
 
 interface DetailPanelProps {
-  lead: Lead | null;
+  lead: Lead;
   onClose: () => void;
 }
 
-function getCategoryColor(niche: string): string {
-  const colors: Record<string, string> = {
-    Construction: '#828fff',
-    Fleet: '#34d399',
-    'IT Services': '#fbbf24',
-    General: '#8a8f98',
-    Engineering: '#c084fc',
+function getGradient(niche: string): string {
+  const gradients: Record<string, string> = {
+    Construction:
+      'linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%)',
+    Fleet:
+      'linear-gradient(135deg, #0d2818 0%, #0a3d25 40%, #0b5e3c 100%)',
+    'IT Services':
+      'linear-gradient(135deg, #2d1b00 0%, #4a2c00 40%, #6b3f00 100%)',
+    General:
+      'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 40%, #404040 100%)',
+    Engineering:
+      'linear-gradient(135deg, #1a0a2e 0%, #2d1040 40%, #4a1d6e 100%)',
   };
-  return colors[niche] || colors.General;
+  return gradients[niche] || gradients.General;
 }
 
 export default function DetailPanel({ lead, onClose }: DetailPanelProps) {
-  if (!lead) return null;
-
   const deadlineDate = lead.submission_deadline_date
     ? new Date(lead.submission_deadline_date + 'T23:59:59')
     : null;
   const now = new Date();
   const daysLeft = deadlineDate
-    ? Math.ceil((deadlineDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+    ? Math.ceil(
+        (deadlineDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+      )
     : null;
 
   return (
-    <div className="glass-drawer w-[420px] h-screen overflow-y-auto flex-shrink-0">
-      {/* Drawer Header */}
-      <div className="sticky top-0 z-5 bg-[var(--color-bg-panel)] border-b border-[var(--border-subtle)] px-5 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full" style={{ background: getCategoryColor(lead.classification_niche) }} />
-          <span className="text-[11px] font-500 text-[var(--color-text-tertiary)] tracking-tight uppercase">
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-panel" onClick={(e) => e.stopPropagation()}>
+        {/* Header with gradient bar */}
+        <div
+          style={{
+            height: 120,
+            background: getGradient(lead.classification_niche),
+            borderRadius: 'var(--radius-lg) var(--radius-lg) 0 0',
+            display: 'flex',
+            alignItems: 'flex-end',
+            padding: '20px 32px',
+          }}
+        >
+          <span
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              padding: '4px 14px',
+              borderRadius: 'var(--radius-sm)',
+              fontSize: 10,
+              fontWeight: 600,
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px',
+              background: 'rgba(255,255,255,0.15)',
+              color: '#fff',
+            }}
+          >
             {lead.classification_niche}
           </span>
         </div>
-        <button
-          onClick={onClose}
-          className="w-6 h-6 rounded-md flex items-center justify-center hover:bg-[rgba(255,255,255,0.05)] transition-colors"
-        >
-          <X size={14} className="text-[var(--color-text-quaternary)]" />
-        </button>
-      </div>
 
-      <div className="px-5 py-4 space-y-5">
-        {/* Title */}
-        <div>
-          <h2 className="text-[17px] font-500 text-[var(--color-text-primary)] leading-snug tracking-tight">
-            {lead.contract_title}
-          </h2>
-          <a
-            href={lead.raw_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-[12px] font-400 text-[var(--color-brand-accent)] hover:text-[var(--color-brand-hover)] mt-1.5 no-underline"
-          >
-            <ExternalLink size={11} />
-            View on Procurement Portal
-          </a>
-        </div>
-
-        {/* Quick Stats Grid */}
-        <div className="grid grid-cols-2 gap-2">
-          <div className="p-3 rounded-lg" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-subtle)' }}>
-            <div className="flex items-center gap-1.5 mb-1.5">
-              <Building2 size={11} className="text-[var(--color-text-quaternary)]" />
-              <span className="text-[10px] font-500 text-[var(--color-text-quaternary)] uppercase tracking-wider">Agency</span>
-            </div>
-            <span className="text-[12px] font-500 text-[var(--color-text-secondary)]">
-              {lead.department || lead.county_agency}
-            </span>
-          </div>
-
-          <div className="p-3 rounded-lg" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-subtle)' }}>
-            <div className="flex items-center gap-1.5 mb-1.5">
-              <Calendar size={11} className="text-[var(--color-text-quaternary)]" />
-              <span className="text-[10px] font-500 text-[var(--color-text-quaternary)] uppercase tracking-wider">Deadline</span>
-            </div>
-            <span className="text-[12px] font-500 text-[var(--color-text-secondary)]">
-              {lead.submission_deadline_date || 'TBD'}
-            </span>
-          </div>
-
-          <div className="p-3 rounded-lg" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-subtle)' }}>
-            <div className="flex items-center gap-1.5 mb-1.5">
-              <Tag size={11} className="text-[var(--color-text-quaternary)]" />
-              <span className="text-[10px] font-500 text-[var(--color-text-quaternary)] uppercase tracking-wider">Category</span>
-            </div>
-            <span className="text-[12px] font-500" style={{ color: getCategoryColor(lead.classification_niche) }}>
-              {lead.classification_niche}
-            </span>
-          </div>
-
-          <div className="p-3 rounded-lg" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-subtle)' }}>
-            <div className="flex items-center gap-1.5 mb-1.5">
-              <DollarSign size={11} className="text-[var(--color-text-quaternary)]" />
-              <span className="text-[10px] font-500 text-[var(--color-text-quaternary)] uppercase tracking-wider">Budget</span>
-            </div>
-            <span className="text-[12px] font-500 font-mono text-[var(--color-text-secondary)]">
-              {lead.project_budget_estimate || 'Not specified'}
-            </span>
-          </div>
-        </div>
-
-        {/* Countdown Bar */}
-        {daysLeft !== null && (
-          <div
-            className="p-3 rounded-lg flex items-center gap-2.5"
+        <div className="modal-header">
+          <h2
             style={{
-              background: daysLeft <= 5 ? 'rgba(239,68,68,0.08)' : 'rgba(255,255,255,0.02)',
-              border: `1px solid ${daysLeft <= 5 ? 'rgba(239,68,68,0.15)' : 'var(--border-subtle)'}`,
+              fontFamily: 'var(--font-sans)',
+              fontSize: 24,
+              fontWeight: 600,
+              letterSpacing: '-0.2px',
+              lineHeight: 1.3,
+              margin: 0,
+              flex: 1,
+              paddingRight: 16,
             }}
           >
-            <Clock size={14} className={daysLeft <= 5 ? 'text-[#ef4444]' : 'text-[var(--color-text-quaternary)]'} />
-            <div>
+            {lead.contract_title}
+          </h2>
+          <button className="modal-close" onClick={onClose}>
+            ✕
+          </button>
+        </div>
+
+        <div className="modal-body">
+          {/* Quick stats row */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+              gap: 12,
+              marginBottom: 24,
+            }}
+          >
+            <StatBox
+              label="Agency"
+              value={lead.department || lead.county_agency || 'Ocean County'}
+            />
+            <StatBox
+              label="Deadline"
+              value={lead.submission_deadline_date || 'TBD'}
+              urgent={daysLeft !== null && daysLeft <= 5}
+            />
+            <StatBox label="Budget" value={lead.project_budget_estimate || 'Not specified'} />
+            <StatBox label="Category" value={lead.classification_niche} />
+          </div>
+
+          {/* Countdown */}
+          {daysLeft !== null && (
+            <div
+              style={{
+                padding: '14px 18px',
+                borderRadius: 'var(--radius-md)',
+                background:
+                  daysLeft <= 5 ? '#fef2f2' : 'var(--color-bg-off)',
+                border:
+                  daysLeft <= 5
+                    ? '1px solid #fecaca'
+                    : '1px solid var(--color-border-light)',
+                marginBottom: 24,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 10,
+              }}
+            >
               <span
-                className="text-[13px] font-500"
-                style={{ color: daysLeft <= 5 ? '#ef4444' : 'var(--color-text-secondary)' }}
+                style={{
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: daysLeft <= 5 ? '#dc2626' : 'var(--color-text-secondary)',
+                }}
               >
-                {daysLeft <= 0 ? 'Expired' : `${daysLeft} day${daysLeft !== 1 ? 's' : ''} remaining`}
+                {daysLeft <= 0
+                  ? 'Expired'
+                  : `${daysLeft} day${daysLeft !== 1 ? 's' : ''} remaining`}
               </span>
-              <span className="text-[11px] font-400 text-[var(--color-text-quaternary)] block">
+              <span
+                style={{
+                  fontSize: 12,
+                  color: 'var(--color-text-quaternary)',
+                }}
+              >
                 {lead.submission_deadline_date}
               </span>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Pre-Bid Meeting */}
-        {lead.pre_bid_conference_details && (
-          <div>
-            <div className="flex items-center gap-1.5 mb-2">
-              <Calendar size={12} className="text-[var(--color-text-quaternary)]" />
-              <h3 className="text-[11px] font-500 text-[var(--color-text-quaternary)] uppercase tracking-wider">
-                Pre-Bid Conference
-              </h3>
+          {/* Pre-Bid Conference */}
+          {lead.pre_bid_conference_details && (
+            <div className="modal-section">
+              <div className="modal-section-label">Pre-Bid Conference</div>
+              <div className="modal-section-value">
+                {lead.pre_bid_conference_details}
+              </div>
             </div>
-            <p className="text-[12px] font-400 text-[var(--color-text-secondary)] leading-relaxed">
-              {lead.pre_bid_conference_details}
-            </p>
-          </div>
-        )}
+          )}
 
-        {/* Overview */}
-        {lead.overview_text && (
-          <div>
-            <div className="flex items-center gap-1.5 mb-2">
-              <FileText size={12} className="text-[var(--color-text-quaternary)]" />
-              <h3 className="text-[11px] font-500 text-[var(--color-text-quaternary)] uppercase tracking-wider">
-                Summary
-              </h3>
+          {/* Overview */}
+          {lead.overview_text && (
+            <div className="modal-section">
+              <div className="modal-section-label">Summary</div>
+              <div className="modal-section-value">
+                {lead.overview_text}
+              </div>
             </div>
-            <p className="text-[12px] font-400 text-[var(--color-text-secondary)] leading-relaxed">
-              {lead.overview_text}
-            </p>
-          </div>
-        )}
+          )}
 
-        {/* Scope of Work */}
-        {lead.scope_text && (
-          <div>
-            <div className="flex items-center gap-1.5 mb-2">
-              <FileText size={12} className="text-[var(--color-text-quaternary)]" />
-              <h3 className="text-[11px] font-500 text-[var(--color-text-quaternary)] uppercase tracking-wider">
-                Scope of Work
-              </h3>
+          {/* Scope of Work */}
+          {lead.scope_text && (
+            <div className="modal-section">
+              <div className="modal-section-label">Scope of Work</div>
+              <div className="modal-section-value" style={{ whiteSpace: 'pre-line' }}>
+                {lead.scope_text}
+              </div>
             </div>
-            <p className="text-[12px] font-400 text-[var(--color-text-secondary)] leading-relaxed whitespace-pre-line">
-              {lead.scope_text}
-            </p>
-          </div>
-        )}
+          )}
 
-        {/* NIGP Codes */}
-        {lead.nigp_codes && (
-          <div>
-            <div className="flex items-center gap-1.5 mb-2">
-              <Tag size={12} className="text-[var(--color-text-quaternary)]" />
-              <h3 className="text-[11px] font-500 text-[var(--color-text-quaternary)] uppercase tracking-wider">
-                NIGP Codes
-              </h3>
+          {/* NIGP Codes */}
+          {lead.nigp_codes && (
+            <div className="modal-section">
+              <div className="modal-section-label">NIGP Codes</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {lead.nigp_codes.split(',').map((code) => (
+                  <span
+                    key={code.trim()}
+                    style={{
+                      display: 'inline-flex',
+                      padding: '4px 12px',
+                      borderRadius: 'var(--radius-xl)',
+                      fontSize: 12,
+                      fontWeight: 500,
+                      color: 'var(--color-text-tertiary)',
+                      background: 'var(--color-bg-off)',
+                      border: '1px solid var(--color-border-light)',
+                    }}
+                  >
+                    {code.trim()}
+                  </span>
+                ))}
+              </div>
             </div>
-            <div className="flex flex-wrap gap-1.5">
-              {lead.nigp_codes.split(',').map((code) => (
-                <span
-                  key={code.trim()}
-                  className="text-[11px] font-500 text-[var(--color-text-tertiary)] px-2 py-1 rounded-md"
-                  style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-subtle)' }}
-                >
-                  {code.trim()}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
+          )}
 
-        {/* Download Source PDF */}
-        <div className="pt-2">
-          <a
-            href={lead.raw_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-md text-[12px] font-500 text-[var(--color-text-primary)] no-underline transition-all"
-            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border-standard)' }}
-          >
-            <FileText size={13} />
-            Download Source PDF
-          </a>
+          {/* Source Link */}
+          <div style={{ marginTop: 32 }}>
+            <a
+              href={lead.raw_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '10px 24px',
+                borderRadius: 'var(--radius-xl)',
+                fontSize: 13,
+                fontWeight: 500,
+                color: 'var(--color-bg)',
+                background: 'var(--color-text-primary)',
+                textDecoration: 'none',
+                transition: 'opacity 0.15s ease',
+              }}
+            >
+              View on Procurement Portal ↗
+            </a>
+          </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function StatBox({
+  label,
+  value,
+  urgent,
+}: {
+  label: string;
+  value: string;
+  urgent?: boolean;
+}) {
+  return (
+    <div
+      style={{
+        padding: '12px 14px',
+        borderRadius: 'var(--radius-md)',
+        background: 'var(--color-bg-off)',
+        border: '1px solid var(--color-border-light)',
+      }}
+    >
+      <div
+        style={{
+          fontSize: 10,
+          fontWeight: 600,
+          textTransform: 'uppercase',
+          letterSpacing: '0.8px',
+          color: 'var(--color-text-quaternary)',
+          marginBottom: 4,
+        }}
+      >
+        {label}
+      </div>
+      <div
+        style={{
+          fontSize: 13,
+          fontWeight: 500,
+          color: urgent ? '#dc2626' : 'var(--color-text-secondary)',
+        }}
+      >
+        {value}
       </div>
     </div>
   );
