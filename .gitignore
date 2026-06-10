@@ -1,7 +1,9 @@
 .env
+node_modules/
 __pycache__/
 leads.db
 scraper.log
 temp_bids/
 output/
 client/node_modules/
+client/dist/
