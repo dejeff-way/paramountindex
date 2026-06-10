@@ -1,0 +1,44 @@
+[
+  {
+    "slug": "ocean",
+    "county": "Ocean County",
+    "state": "NJ",
+    "url": "https://procurement.opengov.com/portal/oceancounty",
+    "active": true
+  },
+  {
+    "slug": "monmouth",
+    "county": "Monmouth County",
+    "state": "NJ",
+    "url": "https://procurement.opengov.com/portal/monmouthcounty",
+    "active": true
+  },
+  {
+    "slug": "middlesex",
+    "county": "Middlesex County",
+    "state": "NJ",
+    "url": "https://procurement.opengov.com/portal/middlesexcounty",
+    "active": true
+  },
+  {
+    "slug": "bergen",
+    "county": "Bergen County",
+    "state": "NJ",
+    "url": "https://procurement.opengov.com/portal/bergencounty",
+    "active": true
+  },
+  {
+    "slug": "morris",
+    "county": "Morris County",
+    "state": "NJ",
+    "url": "https://procurement.opengov.com/portal/morriscounty",
+    "active": true
+  },
+  {
+    "slug": "somerset",
+    "county": "Somerset County",
+    "state": "NJ",
+    "url": "https://procurement.opengov.com/portal/somersetcounty",
+    "active": true
+  }
+]
