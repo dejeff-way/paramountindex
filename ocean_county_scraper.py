@@ -320,7 +320,7 @@ def scrape_project_detail(title: str) -> dict:
             result["due_date"] = meta.get("dueDate", "")
             result["raw_url"] = page.url
 
-            # --- Extract Overview tab text ---
+            # --- Extract Overview tab text (content only, no chrome) ---
             overview_text = page.evaluate("""() => {
                 // Click Overview tab if not already selected
                 const tabs = document.querySelectorAll('[role="tab"]');
@@ -334,14 +334,22 @@ def scrape_project_detail(title: str) -> dict:
 
                 return new Promise(resolve => {
                     setTimeout(() => {
-                        const main = document.querySelector('main') || document.body;
-                        resolve(main.innerText.substring(0, 10000));
+                        // Target the active tab panel, NOT the entire main
+                        const panel = document.querySelector('[role="tabpanel"]:not([hidden])');
+                        if (!panel) {
+                            // Fallback: try to find the overview content section
+                            const main = document.querySelector('main');
+                            resolve(main ? main.innerText.substring(0, 8000) : '');
+                            return;
+                        }
+                        resolve(panel.innerText.substring(0, 8000));
                     }, 1500);
                 });
             }""")
-            result["overview_text"] = overview_text
+            # Strip OpenGov portal chrome from overview
+            result["overview_text"] = _clean_portal_chrome(overview_text)
 
-            # --- Extract Project Documents: Scope of Work ---
+            # --- Extract Project Documents: Scope of Work (content only) ---
             scope_text = page.evaluate("""() => {
                 const tabs = document.querySelectorAll('[role="tab"]');
                 let docsTab = null;
@@ -369,21 +377,22 @@ def scrape_project_detail(title: str) -> dict:
                             }
                         }
                         if (!scopeTab) {
-                            // Get whatever is visible
-                            const main = document.querySelector('main');
-                            resolve(main ? main.innerText.substring(0, 8000) : '');
+                            // Get whatever is visible in the project documents panel
+                            const panel = document.querySelector('[role="tabpanel"]:not([hidden])');
+                            resolve(panel ? panel.innerText.substring(0, 10000) : '');
                             return;
                         }
 
                         scopeTab.click();
                         setTimeout(() => {
-                            const main = document.querySelector('main') || document.body;
-                            resolve(main.innerText.substring(0, 12000));
+                            // Target the active tab panel only
+                            const panel = document.querySelector('[role="tabpanel"]:not([hidden])');
+                            resolve(panel ? panel.innerText.substring(0, 10000) : '');
                         }, 1500);
                     }, 1500);
                 });
             }""")
-            result["scope_text"] = scope_text
+            result["scope_text"] = _clean_portal_chrome(scope_text)
 
             # --- Extract pre-bid conference details from full text ---
             full_text = overview_text + "\n" + scope_text
@@ -409,6 +418,84 @@ def scrape_project_detail(title: str) -> dict:
 # -------------------------------------------------------------------
 # DeepSeek Transformation
 # -------------------------------------------------------------------
+def _clean_portal_chrome(text: str) -> str:
+    """Strip OpenGov portal UI chrome from extracted text."""
+    if not text:
+        return ""
+
+    # Lines/patterns that are portal UI, not bid content
+    chrome_patterns = [
+        r'^Procurement Portal\s*$',
+        r'^Visit Help Center\s*$',
+        r'^County of Ocean Portal\s*$',
+        r'^OPEN\s*$',
+        r'^Follow\s*$',
+        r'^Draft Response\s+No Bid\s*$',
+        r'^Draft Response\s*$',
+        r'^No Bid\s*$',
+        r'^Time Remaining:.*$',
+        r'^Posted\s+.*$',
+        r'^All dates & times in Eastern Time\s*$',
+        r'^Overview\s*$',
+        r'^Project Documents\s*$',
+        r'^Downloads\s*$',
+        r'^Addenda & Notices\s*$',
+        r'^Question & Answer\s*$',
+        r'^View All Sections\s*$',
+        r'^To respond to this project.*$',
+        r'^Release Date:.*$',
+        r'^Due Date:.*$',
+        r'^Posted At:.*$',
+        r'^Sealed Bid Process:.*$',
+        r'^Private Bid:.*$',
+        r'^Timeline\s*$',
+        r'^Advertising Date:.*$',
+        r'^Bid Opening Date:.*$',
+        r'^\d+\.\s+Notice to Bidders\s*$',
+        r'^\d+\.\s+Contact Information and Project Timeline\s*$',
+        r'^\d+\.\s+Important Instructions for Electronic Submittal\s*$',
+        r'^\d+\.\s+Instructions to Bidders\s*$',
+        r'^\d+\.\s+Award Method\s*$',
+        r'^\d+\.\s+Mandatory Equal Employment Opportunity\s*$',
+        r'^\d+\.\s+Americans with Disabilities Act\s*$',
+        r'^\d+\.\s+Scope of Work\s*$',
+        r'^\d+\.\s+Attachments\s*$',
+        r'^\d+\.\s+Vendor Questionnaire\s*$',
+        r'^\d+\.\s+Pricing Proposal\s*$',
+        r'^View All Sections\s*$',
+    ]
+
+    lines = text.split('\n')
+    cleaned = []
+    for line in lines:
+        stripped = line.strip()
+        if not stripped:
+            cleaned.append('')
+            continue
+        # Check against all chrome patterns
+        is_chrome = False
+        for pattern in chrome_patterns:
+            if re.match(pattern, stripped, re.IGNORECASE):
+                is_chrome = True
+                break
+        if not is_chrome:
+            cleaned.append(stripped)
+
+    # Collapse multiple blank lines
+    result_lines = []
+    prev_blank = False
+    for line in cleaned:
+        if line == '':
+            if not prev_blank:
+                result_lines.append(line)
+            prev_blank = True
+        else:
+            result_lines.append(line)
+            prev_blank = False
+
+    return '\n'.join(result_lines).strip()
+
+
 def transform_with_deepseek(title: str, overview: str, scope: str) -> dict:
     """Send extracted text to DeepSeek for structured JSON."""
     api_key = get_deepseek_key()
