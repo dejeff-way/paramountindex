@@ -144,23 +144,7 @@ function DetailModal({ lead, onClose }: { lead: Lead; onClose: () => void }) {
       )
     : null;
 
-  const gradientColors: Record<string, string> = {
-    Construction:
-      'linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%)',
-    Fleet:
-      'linear-gradient(135deg, #0d2818 0%, #0a3d25 40%, #0b5e3c 100%)',
-    'IT Services':
-      'linear-gradient(135deg, #2d1b00 0%, #4a2c00 40%, #6b3f00 100%)',
-    General:
-      'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 40%, #404040 100%)',
-    Engineering:
-      'linear-gradient(135deg, #1a0a2e 0%, #2d1040 40%, #4a1d6e 100%)',
-    Janitorial:
-      'linear-gradient(135deg, #0d2818 0%, #1a4a2e 40%, #2d6b4a 100%)',
-    'Professional Services':
-      'linear-gradient(135deg, #1a1a2e 0%, #2d2d4a 40%, #4a4a6e 100%)',
-  };
-  const gradient = gradientColors[lead.classification_niche] || gradientColors.General;
+  const categoryImage = `/category-images/${lead.classification_niche.toLowerCase().replace(' ', '-')}.jpg`;
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -168,7 +152,9 @@ function DetailModal({ lead, onClose }: { lead: Lead; onClose: () => void }) {
         <div
           style={{
             height: 120,
-            background: gradient,
+            backgroundImage: `url(${categoryImage})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
             borderRadius: 'var(--radius-lg) var(--radius-lg) 0 0',
             display: 'flex',
             alignItems: 'flex-end',

@@ -26,20 +26,19 @@ function getDaysRemaining(dateStr: string): {
   };
 }
 
-function getGradient(niche: string): string {
-  const gradients: Record<string, string> = {
-    Construction:
-      'linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%)',
-    Fleet:
-      'linear-gradient(135deg, #0d2818 0%, #0a3d25 40%, #0b5e3c 100%)',
-    'IT Services':
-      'linear-gradient(135deg, #2d1b00 0%, #4a2c00 40%, #6b3f00 100%)',
-    General:
-      'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 40%, #404040 100%)',
-    Engineering:
-      'linear-gradient(135deg, #1a0a2e 0%, #2d1040 40%, #4a1d6e 100%)',
-  };
-  return gradients[niche] || gradients.General;
+const CATEGORY_IMAGE: Record<string, string> = {
+  Construction: '/category-images/construction.jpg',
+  Fleet: '/category-images/fleet.jpg',
+  'IT Services': '/category-images/it-services.jpg',
+  Janitorial: '/category-images/janitorial.jpg',
+  'Professional Services': '/category-images/professional-services.jpg',
+  General: '/category-images/general.jpg',
+  Healthcare: '/category-images/healthcare.jpg',
+  Engineering: '/category-images/engineering.jpg',
+};
+
+function getCategoryImage(niche: string): string {
+  return CATEGORY_IMAGE[niche] || CATEGORY_IMAGE.General;
 }
 
 export default function LeadCard({
@@ -60,10 +59,14 @@ export default function LeadCard({
         if (e.key === 'Enter' || e.key === ' ') onClick();
       }}
     >
-      {/* Image Placeholder with gradient */}
+      {/* Category Image */}
       <div
         className="card-image"
-        style={{ background: getGradient(lead.classification_niche) }}
+        style={{
+          backgroundImage: `url(${getCategoryImage(lead.classification_niche)})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
       >
         <div className="card-image-placeholder">
           <span className="card-badge-top">
